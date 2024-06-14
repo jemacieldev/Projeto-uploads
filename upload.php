@@ -25,3 +25,34 @@ if (isset($_POST['upload'])) {
         // Move o arquivo para o diretório de uploads
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
             // Prepara os dados do upload para salvar
+            $uploadData = [
+                'file' => $filePath,
+                'description' => $description,
+            ];
+
+            // Caminho para o arquivo JSON onde os dados serão armazenados
+            $jsonFile = 'uploads.json';
+            $uploadsArray = [];
+
+            // Verifica se o arquivo JSON já existe e carrega seu conteúdo se existir
+            if (file_exists($jsonFile)) {
+                $uploadsArray = json_decode(file_get_contents($jsonFile), true);
+            }
+
+            // Adiciona o novo upload ao array
+            $uploadsArray[] = $uploadData;
+
+            // Salva o array atualizado de uploads de volta no arquivo JSON
+            file_put_contents($jsonFile, json_encode($uploadsArray));
+
+            // Redireciona para evitar o reenvio do formulário
+            header('Location: index.html');
+            exit();
+        } else {
+            echo "Erro ao mover o arquivo.";
+        }
+    } else {
+        echo "Tipo de arquivo não permitido.";
+    }
+}
+?>
