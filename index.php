@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload de Imagens e Vídeos</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -18,7 +18,7 @@
         <!-- Aqui serão listados os arquivos já carregados -->
     </div>
 </div>
-<script src="js/scripts.js"></script>
+<script src="scripts.js"></script>
 </body>
 </html>
 
