@@ -1,42 +1,53 @@
+/* Reseta o estilo padrão */
+* {
+    box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura e altura totais */
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    overflow-y: auto; /* Permite rolagem vertical quando necessário */
+    padding: 20px; /* Adiciona espaçamento ao redor do conteúdo */
 }
 
 .container {
     width: 100%;
-    max-width: 800px;
+    max-width: 800px; /* Limita a largura máxima do container */
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    box-sizing: border-box;
+    margin: 20px auto; /* Centraliza o container e adiciona margem */
+    overflow: hidden; /* Evita que o conteúdo transborde */
 }
 
 h1 {
     text-align: center;
     margin-bottom: 20px;
+    overflow-wrap: break-word; /* Quebra de palavra para evitar corte */
+    hyphens: auto; /* Hifenização automática para palavras longas */
 }
 
 form {
     display: flex;
     flex-direction: column;
+    gap: 10px; /* Adiciona espaçamento entre os elementos */
 }
 
 input[type="file"],
 textarea,
 button {
-    margin-bottom: 10px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 input[type="file"] {
@@ -51,9 +62,7 @@ button {
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 10px;
     cursor: pointer;
-    border-radius: 4px;
     transition: background-color 0.3s;
 }
 
@@ -71,36 +80,61 @@ button:hover {
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #f9f9f9;
+    text-align: center;
 }
 
 .upload-item img,
 .upload-item video {
     max-width: 100%;
+    max-height: 300px; /* Limita a altura máxima */
     border-radius: 4px;
     margin-bottom: 10px;
 }
 
-.upload-item img {
-    display: block;
-}
-
-.upload-item video {
-    display: block;
-    max-height: 300px;
+/* Estilo para a mensagem de carregamento */
+.custom-alert, .alert {
+    display: none; /* Escondido por padrão */
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 5px;
+    text-align: center;
 }
 
 .custom-alert {
-    display: none; /* Escondido por padrão */
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    text-align: center;
+}
+
+
+/* Ajustes específicos para diferentes tamanhos de tela */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    form {
+        gap: 5px; /* Reduz o espaçamento em telas menores */
+    }
+
+    button {
+        padding: 8px; /* Ajusta o padding do botão */
+    }
+
+    .upload-item img,
+    .upload-item video {
+        max-height: 200px; /* Ajusta a altura máxima para telas menores */
+    }
 }

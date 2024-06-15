@@ -1,5 +1,6 @@
 <?php
-// Verifica se o formulário foi submetido
+session_start();
+
 if (isset($_POST['upload'])) {
     // Pasta onde os uploads serão armazenados
     $uploadsDir = 'uploads/';
@@ -16,35 +17,45 @@ if (isset($_POST['upload'])) {
     $file = $_FILES['file'];
     $description = $_POST['description'];
 
+    // Função para sanitizar o nome do arquivo
+    function sanitizeFileName($filename) {
+        // Remove caracteres especiais e espaços, substitui por underscore
+        $filename = preg_replace('/[^a-zA-Z0-9_\.\-]/', '_', $filename);
+        return $filename;
+    }
+
     // Verifica se o tipo do arquivo é permitido
     if (in_array($file['type'], $allowedTypes)) {
+        // Obtém a extensão do arquivo
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+        // Sanitiza o nome do arquivo original
+        $originalFileName = pathinfo($file['name'], PATHINFO_FILENAME);
+        $sanitizedFileName = sanitizeFileName($originalFileName);
+
         // Gera um nome único para o arquivo
-        $fileName = uniqid() . '_' . basename($file['name']);
-        $filePath = $uploadsDir . $fileName;
+        $uniqueFileName = uniqid() . '_' . $sanitizedFileName . '.' . $extension;
+        $filePath = $uploadsDir . $uniqueFileName;
 
         // Move o arquivo para o diretório de uploads
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
-            // Prepara os dados do upload para salvar
-            $uploadData = [
-                'file' => $filePath,
-                'description' => $description,
+            // Armazena as informações do upload em um arquivo JSON
+            $uploadsListFile = 'uploads.json';
+            $uploadsList = json_decode(file_get_contents($uploadsListFile), true);
+
+            $newUpload = [
+                'filename' => $uniqueFileName,
+                'description' => htmlspecialchars($description),
+                'original_name' => htmlspecialchars($file['name']),
+                'type' => $file['type']
             ];
 
-            // Caminho para o arquivo JSON onde os dados serão armazenados
-            $jsonFile = 'uploads.json';
-            $uploadsArray = [];
+            $uploadsList[] = $newUpload;
+            file_put_contents($uploadsListFile, json_encode($uploadsList));
 
-            // Verifica se o arquivo JSON já existe e carrega seu conteúdo se existir
-            if (file_exists($jsonFile)) {
-                $uploadsArray = json_decode(file_get_contents($jsonFile), true);
-            }
-
-            // Adiciona o novo upload ao array
-            $uploadsArray[] = $uploadData;
-
-            // Salva o array atualizado de uploads de volta no arquivo JSON
-            file_put_contents($jsonFile, json_encode($uploadsArray));
-
+            // Define a mensagem de sucesso na sessão
+            $_SESSION['success_message'] = 'Arquivo enviado com sucesso!';
+            
             // Redireciona para evitar o reenvio do formulário
             header('Location: index.html');
             exit();
