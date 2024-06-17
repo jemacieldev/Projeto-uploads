@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (isset($_POST['upload'])) {
+if (isset($_FILES['file'])) {
     // Pasta onde os uploads serão armazenados
     $uploadsDir = 'uploads/';
 
@@ -39,31 +39,48 @@ if (isset($_POST['upload'])) {
 
         // Move o arquivo para o diretório de uploads
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
-            // Armazena as informações do upload em um arquivo JSON
+            // Verifica se o arquivo uploads.json existe
             $uploadsListFile = 'uploads.json';
-            $uploadsList = json_decode(file_get_contents($uploadsListFile), true);
+            if (!file_exists($uploadsListFile)) {
+                file_put_contents($uploadsListFile, json_encode([]));
+            }
 
+            // Lê o conteúdo atual do uploads.json
+            $uploadsList = json_decode(file_get_contents($uploadsListFile), true);
+            if ($uploadsList === null) {
+                $uploadsList = []; // Inicializa como array vazio se o JSON estiver inválido
+            }
+
+            // Adiciona as novas informações de upload
             $newUpload = [
                 'filename' => $uniqueFileName,
                 'description' => htmlspecialchars($description),
                 'original_name' => htmlspecialchars($file['name']),
-                'type' => $file['type']
+                'type' => $file['type'],
+                'path' => $filePath // Adiciona o caminho do arquivo ao JSON
             ];
 
             $uploadsList[] = $newUpload;
-            file_put_contents($uploadsListFile, json_encode($uploadsList));
 
-            // Define a mensagem de sucesso na sessão
-            $_SESSION['success_message'] = 'Arquivo enviado com sucesso!';
-            
-            // Redireciona para evitar o reenvio do formulário
-            header('Location: index.html');
-            exit();
+            // Tenta salvar as informações no uploads.json
+            if (file_put_contents($uploadsListFile, json_encode($uploadsList))) {
+                // Define a mensagem de sucesso na sessão
+                $_SESSION['success_message'] = 'Arquivo enviado com sucesso!';
+
+                // Redireciona para evitar o reenvio do formulário
+                header('Location: index.html');
+                exit();
+            } else {
+                echo "Erro ao salvar as informações no uploads.json.";
+            }
         } else {
             echo "Erro ao mover o arquivo.";
         }
     } else {
         echo "Tipo de arquivo não permitido.";
     }
+} else {
+    echo "Nenhum arquivo enviado.";
 }
 ?>
+

@@ -40,7 +40,7 @@ $(document).ready(function() {
     updateUploadsList();
 
     function updateUploadsList() {
-        $.getJSON('upload.json', function(data) {
+        $.getJSON('uploads.json', function(data) {
             $('#uploadsList').empty(); // Limpa a lista antes de atualizar
 
             $.each(data, function(index, upload) {
@@ -48,14 +48,16 @@ $(document).ready(function() {
 
                 // Verifica se é uma imagem ou vídeo para exibir corretamente
                 if (upload.type.startsWith('image')) {
-                    $('<img>').attr('src', upload.path).attr('alt', upload.description).appendTo(item);
+                    $('<img>').attr('src', 'uploads/' + upload.filename).attr('alt', upload.description).appendTo(item);
                 } else if (upload.type.startsWith('video')) {
-                    $('<video controls>').attr('src', upload.path).appendTo(item);
+                    $('<video controls>').attr('src', 'uploads/' + upload.filename).appendTo(item);
                 }
 
                 $('<p>').text(upload.description).appendTo(item);
                 item.appendTo('#uploadsList');
             });
+        }).fail(function() {
+            console.log("Erro ao carregar o uploads.json.");
         });
     }
 });
